@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './styles.css';
 import PlayerSelector from './PlayerSelector';
-const DisguisePlayer = ({ player, onDisguise }) => {
+const DisguisePlayer = ({ player, onDisguise, handleCrackPassword  }) => {
   const canvasRef = useRef(null);
   const disguisedImageCanvasRef = useRef(null);
 
@@ -20,7 +20,9 @@ const DisguisePlayer = ({ player, onDisguise }) => {
     }
   }, [player]);
   
-
+  const handleMoreInfoToggle = () => {
+    setShowMoreInfo(!showMoreInfo);
+  };
 
 
   // const [disguiseType, setDisguiseType] = useState('');
@@ -29,6 +31,15 @@ const DisguisePlayer = ({ player, onDisguise }) => {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [savedPassword, setSavedPassword] = useState('');
   const [showMainContainer, setShowMainContainer] = useState(true);
+
+
+
+  const password = useRef();
+  const cPassword = useRef();
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [cPasswordClass, setCPasswordClass] = useState('form-control');
+  const [isCPasswordDirty, setIsCPasswordDirty] = useState(false);
+
 
   const players = [ 
     { name: 'Player 1', src: 'images/personel/1.jpg'},
@@ -124,14 +135,19 @@ const DisguisePlayer = ({ player, onDisguise }) => {
   };
   
 
-  const handleMoreInfoToggle = () => { setShowMoreInfo(!showMoreInfo); };
-  const handleCrackPassword = () => {
-    const userInput = prompt('Enter something to crack the password:');
-    if (userInput) {
-      setSavedPassword(userInput);
-      alert('Password saved for later.');
+
+useEffect(() => {
+    if (isCPasswordDirty) {
+        if (password.current.value === cPassword.current.value) {
+            setShowErrorMessage(false);
+            setCPasswordClass('form-control is-valid')
+        } else {
+            setShowErrorMessage(true)
+            setCPasswordClass('form-control is-invalid')
+        }
     }
-  };
+}, [isCPasswordDirty])
+
   const handleSubmit = () => { 
     const disguisedImageCanvas = disguisedImageCanvasRef.current;
     const disguisedImageContext = disguisedImageCanvas.getContext('2d');
@@ -221,11 +237,14 @@ const DisguisePlayer = ({ player, onDisguise }) => {
           <div>
             <input placeholder='Enter Password Here'/>
             <button >Submit</button>
-            <button>Crack Password</button>
+           <button onClick={handleCrackPassword}>Crack Password</button>
             {/* <PlayerSelector players={players} onSelection={handleSelection}/> */}
           </div>
         </div>
       </div>
+
+
+   
     </div>
   );
 };

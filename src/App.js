@@ -81,62 +81,115 @@
  */
 
 
-
-import React, { useState } from "react";
-import "./styles.css";
-import PlayerSelector from "./PlayerSelector";
-import DisguisePlayer from "./DisguisePlayer";
-
-export default function App() {
-  const [showPlayerSelector, setShowPlayerSelector] = useState(false);
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
-  const [currentPlayer, setCurrentPlayer] = useState(null);
-  const [showDisguisePlayer, setShowDisguisePlayer] = useState(false);
-
-  const players = [
-    { name: "Player 1", src: "/images/personel/1.jpg" },
-    { name: "Player 2", src: "/images/personel/1 (2).jpg" },
-    { name: "Player 3", src: "/images/personel/2 (2).jpg" },
-    { name: "Player 4", src: "/images/personel/3.jpg" },
-    { name: "Player 5", src: "/images/personel/4.jpg" },
-    { name: "Player 6", src: "/images/personel/4 (2).jpg" }
-  ];
-
-  const handleSelection = (selectedPlayers) => {
-    setSelectedPlayers(selectedPlayers);
-    setCurrentPlayer(selectedPlayers[0]);
-    setShowDisguisePlayer(true);
-  };
-
-  const handleStartClick = () => {
-    setShowPlayerSelector(true);
-  };
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Player Selector and Disguise</h1>
-        <h3>Disguise Your Agent</h3>
-        
-        
-        { <button onClick={handleStartClick}>Start</button>}
-        {showPlayerSelector && !showDisguisePlayer && (
-          <PlayerSelector players={players} onSelection={handleSelection} />
-        )}
-
-
-
-
-        {showDisguisePlayer && currentPlayer && (
-          <DisguisePlayer player={currentPlayer} onDisguise={() => {}} />
+    
+     import React, { useState, useEffect, useRef } from "react";
+     import "./styles.css";
+     import PlayerSelector from "./PlayerSelector";
+     import DisguisePlayer from "./DisguisePlayer";
+     
+     export default function App() {
+       const [showPlayerSelector, setShowPlayerSelector] = useState(false);
+       const [selectedPlayers, setSelectedPlayers] = useState([]);
+       const [currentPlayer, setCurrentPlayer] = useState(null);
+       const [showDisguisePlayer, setShowDisguisePlayer] = useState(false);
        
-        )}
-
-
-
-
-
-      </header>
-    </div>
-  );
-}
+       const [password, setPassword] = useState('');
+       const [cPassword, setCPassword] = useState('');
+       const [showErrorMessage, setShowErrorMessage] = useState(false);
+       const [cPasswordClass, setCPasswordClass] = useState('form-control');
+       const [isCPasswordDirty, setIsCPasswordDirty] = useState(false);
+       const [savedPassword, setSavedPassword] = useState('');
+     
+       const passwordRef = useRef();
+       const cPasswordRef = useRef();
+     
+       const players = [
+         { name: "Player 1", src: "/images/personel/1.jpg" },
+         { name: "Player 2", src: "/images/personel/1 (2).jpg" },
+         { name: "Player 3", src: "/images/personel/2 (2).jpg" },
+         { name: "Player 4", src: "/images/personel/3.jpg" },
+         { name: "Player 5", src: "/images/personel/4.jpg" },
+         { name: "Player 6", src: "/images/personel/4 (2).jpg" }
+       ];
+     
+       const handleSelection = (selectedPlayers) => {
+         setSelectedPlayers(selectedPlayers);
+         setCurrentPlayer(selectedPlayers[0]);
+         setShowDisguisePlayer(true);
+       };
+     
+       const handleStartClick = () => {
+         setShowPlayerSelector(true);
+       };
+     
+       const checkPasswords = () => {
+         setIsCPasswordDirty(true);
+         if (isCPasswordDirty) {
+           if (passwordRef.current.value === cPasswordRef.current.value) {
+             setShowErrorMessage(false);
+             setCPasswordClass('form-control is-valid');
+           } else {
+             setShowErrorMessage(true);
+             setCPasswordClass('form-control is-invalid');
+           }
+         }
+       };
+     
+       const handleCrackPassword = () => {
+         const userInput = prompt('Enter something to crack the password:');
+         if (userInput) {
+           setSavedPassword(userInput);
+           alert('Password saved for later.');
+         }
+       };
+     
+       return (
+         <div className="App">
+           <header className="App-header">
+             <h1>Player Selector and Disguise</h1>
+             <h3>Disguise Your Agent</h3>
+             
+             {!showPlayerSelector && <button onClick={handleStartClick}>Start</button>}
+             {showPlayerSelector && !showDisguisePlayer && (
+               <PlayerSelector players={players} onSelection={handleSelection} />
+             )}
+             {showDisguisePlayer && currentPlayer && (
+               <DisguisePlayer 
+                 player={currentPlayer} 
+                 onDisguise={() => {}} 
+                 handleCrackPassword={handleCrackPassword}
+               />
+             )}
+           </header>
+           <div className='container'>
+             <form>
+               <div className="mb-3">
+                 <label htmlFor="password" className="form-label">Password</label>
+                 <input 
+                   type="password" 
+                   className="form-control" 
+                   id="password" 
+                   ref={passwordRef}
+                   onChange={(e) => setPassword(e.target.value)}
+                 />
+               </div>
+               <div className="mb-3">
+                 <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                 <input 
+                   type="password" 
+                   className={cPasswordClass} 
+                   id="confirmPassword" 
+                   ref={cPasswordRef}
+                   onChange={(e) => {
+                     setCPassword(e.target.value);
+                     checkPasswords();
+                   }}
+                 />
+               </div>
+               {showErrorMessage && isCPasswordDirty && <div>Passwords did not match</div>}
+               <button type="submit" className="btn btn-primary">Submit</button>
+             </form>
+           </div>
+         </div>
+       );
+     }
