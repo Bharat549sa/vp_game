@@ -1,4 +1,4 @@
-Based on your current code and requirements, here's how you can modify your App.js to display the doppelganger images and update them in real-time using a slider:
+modify your App.js to display the doppelganger images and update them in real-time using a slider:
 vp_game-main
 import React, { useState, useEffect } from "react";
 import "./styles.css";
@@ -62,12 +62,12 @@ export default function App() {
         </div>
       )}
 
-      {/* ... (keep your existing components like PlayerSelector, DisguisePlayer, etc.) */}
+      {/* keep exisiting components like PlayerSelector, DisguisePlayer, etc.) */}
     </div>
   );
 }
 
-// ... (keep your getDoppelgangerImages function as is)
+// keep original code here as well
 Apply
 This modification does the following:
 1.
@@ -77,4 +77,4 @@ We've added a useEffect hook that generates the initial doppelganger images when
 3.
 We've added a handleSliderChange function that updates the slider value and regenerates the doppelganger images when the slider is moved.
 4.
-In the JSX, we've added a new section that displays the slider and the doppelganger images. This section only 
+In the JSX, we've added a new section that displays the slider and the doppelganger images. 
