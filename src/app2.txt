@@ -1,0 +1,120 @@
+To achieve this, we need to modify the DisguisePlayer component to save the disguised image to the images/displayimage folder, and then update the App and ComparePlayers components to display the saved image. Here's how we can do this:
+1.
+First, let's modify the DisguisePlayer component to save the disguised image:
+vp_game-main
+import React, { useRef, useState, useEffect } from 'react';
+import axios from 'axios'; // You'll need to install axios: npm install axios
+
+const DisguisePlayer = ({ player, onDisguise, onEncryptionDecision }) => {
+  // ... existing code ...
+
+  const handleSubmit = async () => { 
+    const disguisedImageCanvas = disguisedImageCanvasRef.current;
+    const disguisedImageDataURL = disguisedImageCanvas.toDataURL();
+    
+    // Save the image to the server
+    try {
+      const response = await axios.post('/api/save-image', { 
+        imageData: disguisedImageDataURL,
+        fileName: `disguised_${player.name}.png`
+      });
+      
+      if (response.data.success) {
+        setShowMainContainer(false);
+        onDisguise(`/images/displayimage/disguised_${player.name}.png`);
+      } else {
+        console.error('Failed to save image');
+      }
+    } catch (error) {
+      console.error('Error saving image:', error);
+    }
+  };
+
+  // ... rest of the component ...
+};
+Apply
+2.
+Now, let's update the App component to pass the correct disguised image path:
+vp_game-main
+export default function App() {
+  // ... existing code ...
+
+  const handleDisguise = (disguisedImagePath) => {
+    setDisguisedImage(disguisedImagePath);
+    setShowDisguisePlayer(false);
+    setShowComparePlayers(true);
+  };
+
+  // ... existing code ...
+
+  return (
+    <div className="App">
+      {/* ... existing code ... */}
+
+      {showComparePlayers && currentPlayer && disguisedImage && (
+        <ComparePlayers
+          originalPlayer={currentPlayer}
+          disguisedPlayer={{ ...currentPlayer, src: disguisedImage }}
+        />
+      )}
+
+      {/* ... rest of the component ... */}
+    </div>
+  );
+}
+Apply
+3.
+Finally, let's update the ComparePlayers component to display both the original and disguised images:
+vp_game-main
+import React from 'react';
+
+const ComparePlayers = ({ originalPlayer, disguisedPlayer }) => {
+  return (
+    <div className="compare-players">
+      <h2>Compare Original and Disguised Images</h2>
+      <div className="image-comparison">
+        <div className="original-image">
+          <h3>Original Image</h3>
+          <img src={originalPlayer.src} alt="Original Player" />
+        </div>
+        <div className="disguised-image">
+          <h3>Disguised Image</h3>
+          <img src={disguisedPlayer.src} alt="Disguised Player" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ComparePlayers;
+Apply
+To make this work, you'll need to set up a server endpoint that can handle saving the image. Here's a simple Express.js route that could handle this:
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+
+const app = express();
+
+app.use(express.json({ limit: '10mb' }));
+
+app.post('/api/save-image', (req, res) => {
+  const { imageData, fileName } = req.body;
+  const filePath = path.join(__dirname, 'public', 'images', 'displayimage', fileName);
+
+  // Remove the data URL prefix
+  const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+
+  fs.writeFile(filePath, base64Data, 'base64', (err) => {
+    if (err) {
+      console.error('Error saving image:', err);
+      res.json({ success: false, error: err.message });
+    } else {
+      res.json({ success: true });
+    }
+  });
+});
+
+// ... rest of your server code
+Apply
+Remember to create the displayimage folder in your public/images directory if it doesn't already exist.
+This setup will save the disguised image to the server when the user submits it in the DisguisePlayer component, and then display both the original and disguised i
