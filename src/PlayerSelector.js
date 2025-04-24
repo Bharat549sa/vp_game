@@ -1,34 +1,68 @@
 // PlayerSelector.js
 //
-import React, { useState } from "react";
+// import React, { useState } from "react";
 
-const PlayerSelector = ({ players, onSelection }) => {
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
+// const PlayerSelector = ({ players, onSelection }) => {
+//   const [selectedPlayers, setSelectedPlayers] = useState([]);
 
+//   const handleImageClick = (player) => {
+//     if (selectedPlayers.includes(player)) {
+//       setSelectedPlayers(selectedPlayers.filter((p) => p !== player));
+//     } else if (selectedPlayers.length < 5) {
+//       setSelectedPlayers([...selectedPlayers, player]);
+//     }
+//   };
+//   const handleSubmit = () => {
+//     onSelection(selectedPlayers);
+//   };
+
+//   return (
+//     <div>
+//       {" "}
+//       <h2>Select Players</h2>{" "}
+//       <div style={{ display: "flex", flexWrap: "wrap" }}>
+//         {" "}
+//         {players.map((player, index) => (
+//           <div key={index} style={{ margin: "10px" }}>
+//             <img
+//               src={player.src}
+//               alt={player.name}
+//               style={{
+//                 border: selectedPlayers.includes(player)
+//                   ? "2px solid blue"
+//                   : "2px solid transparent",
+//                 cursor: "pointer",
+//                 width: "130px",
+//                 height: "130px",
+//               }}
+//               onClick={() => handleImageClick(player)}
+//             />{" "}
+//             <p>{player.name}</p>{" "}
+//           </div>
+//         ))}{" "}
+//       </div>
+//       <button onClick={handleSubmit}>Submit</button>{" "}
+//     </div>
+//   );
+// };
+// export default PlayerSelector;
+
+
+const PlayerSelector = ({ players, onSelection, selectedPlayer }) => {
   const handleImageClick = (player) => {
-    if (selectedPlayers.includes(player)) {
-      setSelectedPlayers(selectedPlayers.filter((p) => p !== player));
-    } else if (selectedPlayers.length < 5) {
-      setSelectedPlayers([...selectedPlayers, player]);
-    }
-  };
-  const handleSubmit = () => {
-    onSelection(selectedPlayers);
+    onSelection(player);
   };
 
   return (
     <div>
-      {" "}
-      <h2>Select Players</h2>{" "}
       <div style={{ display: "flex", flexWrap: "wrap" }}>
-        {" "}
-        {players.map((player, index) => (
-          <div key={index} style={{ margin: "10px" }}>
+        {players.map((player) => (
+          <div key={player.id} style={{ margin: "10px" }}>
             <img
               src={player.src}
               alt={player.name}
               style={{
-                border: selectedPlayers.includes(player)
+                border: selectedPlayer && selectedPlayer.id === player.id
                   ? "2px solid blue"
                   : "2px solid transparent",
                 cursor: "pointer",
@@ -36,13 +70,13 @@ const PlayerSelector = ({ players, onSelection }) => {
                 height: "130px",
               }}
               onClick={() => handleImageClick(player)}
-            />{" "}
-            <p>{player.name}</p>{" "}
+            />
+            <p>{player.name}</p>
           </div>
-        ))}{" "}
+        ))}
       </div>
-      <button onClick={handleSubmit}>Submit</button>{" "}
     </div>
   );
 };
+
 export default PlayerSelector;
